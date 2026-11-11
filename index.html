@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gen Z Study Lab </title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #D2E7F0;         
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 py-10 px-5 sm:px-6">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-13">
+            <div class="inline-flex items-center gap-2 bg-[#87A987] text-white px-5 py-2 rounded-full text-xs font-bold tracking-wider uppercase mb-5 shadow-lg border border-[#6B8E6B]">
+                🌱 Study Smarter, Not Harder 🌱<br>
+                    by: Afifah, Khalisa, Nasya
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-sage green tracking-tight drop-shadow-md mb-3">
+                Gen Z Study Lab 
+            </h1>
+            <p class="text-sage green-100 text-base sm:text-lg max-w-xl mx-auto font-medium drop-shadow">
+                Temukan cara belajar paling efektif!
+            </p>
+        </header>
+
+        <!-- Grid Cards Metode Belajar (1-10) Tanpa Search -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="studyGrid">
+            <!-- Kartu akan dirender otomatis lewat JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal Detail Pop-up -->
+    <div id="studyModal" class="fixed inset-0 bg-purple-950/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-gradient-to-br from-pink-50 via-purple-50 to-[#F4F9F4] rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative shadow-2xl border-2 border-[#87A987] transform transition-all scale-95 opacity-0" id="modalContent">
+            <button onclick="closeModal()" class="absolute top-5 right-5 w-9 h-9 bg-pink-600 text-white rounded-full font-bold flex items-center justify-center shadow-md hover:bg-pink-700 transition z-10">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data 10 Metode Belajar Lengkap dengan Foto Estetik
+        const studyMethods = [
+            {
+                id: 1,
+                title: "Teknik Pomodoro",
+                category: "Fokus & Waktu",
+                image: "https://www.brandeis.edu/magazine/2026/winter/images/class-notes/liberal-arts-1200.jpg",
+                vibe: "Focus & Rest",
+                desc: "Membagi waktu belajar jadi blok intensif 25 menit diselingi istirahat pendek.",
+                prepTime: "25 Menit Sesi",
+                steps: [
+                    "Pasang timer selama 25 menit.",
+                    "Fokus penuh pada satu tugas tanpa membuka sosial media.",
+                    "Begitu alarm berbunyi, istirahatlah selama 5 menit.",
+                    "Ulangi siklus ini 4 kali, lalu ambil istirahat panjang (15–30 menit)."
+                ],
+                scenario: "Sangat cocok buat kamu yang gampang burnout atau gampang terdistraksi di awal."
+            },
+            {
+                id: 2,
+                title: "Teknik Feynman",
+                category: "Pemahaman",
+                image: "https://i.pinimg.com/736x/97/70/88/9770883ab9e3de3a79c9a825918ac583.jpg",
+                vibe: "Explain Like I'm 5",
+                desc: "Menguasai materi rumit dengan menjelaskannya kembali pakai bahasa sederhana.",
+                prepTime: "30 Menit",
+                steps: [
+                    "Pilih konsep atau materi sulit yang ingin dikuasai.",
+                    "Jelaskan materi secara lisan seolah-olah sedang mengajari anak kecil.",
+                    "Cari bagian mana yang membuatmu kebingungan saat menjelaskan.",
+                    "Pelajari ulang bagian yang kurang, lalu sederhanakan bahasanya."
+                ],
+                scenario: "Wajib dicoba pas belajar rumus fisika, ekonomi, atau teori abstrak."
+            },
+            {
+                id: 3,
+                title: "Active Recall",
+                category: "Memori",
+                image: "https://www.e2language.com/cdn/shop/articles/books-1015594_1920-1-1536x950_ce8e3d98-4e88-4ffa-9350-be2beb2c0958.jpg?v=1786522878&width=1200",
+                vibe: "Self-Testing",
+                desc: "Menguji daya ingat otak secara aktif tanpa melihat buku catatan.",
+                prepTime: "20 Menit",
+                steps: [
+                    "Baca materi atau bab pelajaran sekilas.",
+                    "Tutup buku dan singkirkan semua catatanmu.",
+                    "Ambil kertas kosong, lalu tulis semua poin yang bisa kamu ingat.",
+                    "Buka kembali buku untuk memeriksa bagian yang terlewat."
+                ],
+                scenario: "Cara paling ampuh buat memasukkan memori ke otak jangka panjang."
+            },
+            {
+                id: 4,
+                title: "Spaced Repetition",
+                category: "Memori",
+                image: "https://i.pinimg.com/736x/9b/f9/97/9bf9973cb79182ea6e2f63ebca7b0aa3.jpg",
+                vibe: "Long-Term Memory",
+                desc: "Sistem pengulangan materi dengan jarak waktu yang semakin lama.",
+                prepTime: "Berkala",
+                steps: [
+                    "Hari ke-1: Mempelajari materi baru untuk pertama kalinya.",
+                    "Hari ke-3: Lakukan review singkat selama 10–15 menit.",
+                    "Hari ke-7: Ulangi kembali materi tersebut.",
+                    "Hari ke-14 & 30: Review terakhir untuk memastikan materi tersimpan permanen."
+                ],
+                scenario: "Sangat direkomendasikan untuk persiapan ujian besar atau UTBK."
+            },
+            {
+                id: 5,
+                title: "Metode Cornell",
+                category: "Catatan",
+                image: "https://preview.redd.it/%D8%B7%D8%A7%D9%84%D8%A8-%D8%AC%D8%AF%D9%8A%D8%AF-v0-si0yvolvhm0i1.jpeg?width=640&crop=smart&auto=webp&s=a12330d7cb5bb31d87bdc00775f22166a7b6d604",
+                vibe: "Structured Notes",
+                desc: "Teknik merangkum catatan ke dalam 3 bagian terstruktur agar gampang dibaca.",
+                prepTime: "Selama Kelas",
+                steps: [
+                    "Bagi kertas jadi 3 bagian: Kolom kanan (catatan), kolom kiri (kata kunci), bawah (ringkasan).",
+                    "Catat penjelasan materi di kolom kanan saat belajar.",
+                    "Tulis kata kunci atau pertanyaan pancingan di kolom kiri sesudahnya.",
+                    "Tulis kesimpulan singkat di bagian bawah."
+                ],
+                scenario: "Cocok buat kamu yang hobi merangkum biar catatan estetik dan rapi."
+            },
+            {
+                id: 6,
+                title: "Teknik Animedoro",
+                category: "Fokus & Waktu",
+                image: "https://relawannusantara.org/wp-content/uploads/2025/03/download-2.jpeg",
+                vibe: "Otaku Focus",
+                desc: "Variasi Pomodoro santai dengan reward nonton anime setelah fokus belajar.",
+                prepTime: "60 Menit Sesi",
+                steps: [
+                    "Fokus belajar secara intensif selama 40–60 menit penuh.",
+                    "Hadiahi dirimu dengan menonton 1 episode anime atau video favorit (20 menit).",
+                    "Ulangi kembali siklus belajar dan hiburan tersebut."
+                ],
+                scenario: "Pilihan pas buat menjaga mood dan motivasi belajar tetap tinggi."
+            },
+            {
+                id: 7,
+                title: "Blurting Method",
+                category: "Memori",
+                image: "https://img-cdn.medkomtek.com/DLvfkVt7YTuRXyYXnU57ZVInrCU=/0x0/smart/filters:quality(100):format(webp)/article/ZF6lxQr4Cq91_RKRfipYm/original/039886400_1556792468-7-Kebiasaan-Ini-Bikin-Otak-Lebih-Tajam-By-Mr.Thanakorn-Kotpootorn-Shutterstock.jpg",
+                vibe: "Fast Dump",
+                desc: "Menuliskan semua hal yang diingat secepat kilat di kertas tanpa mikir struktur.",
+                prepTime: "15 Menit",
+                steps: [
+                    "Baca satu topik materi secara menyeluruh.",
+                    "Ambil kertas kosong dan tulis semua poin secepat mungkin tanpa melihat buku.",
+                    "Gunakan spidol merah untuk menandai informasi yang salah atau terlewat.",
+                    "Perbaiki dan ulangi sampai semua benar."
+                ],
+                scenario: "Mantap dipakai pas mau ngebut hafal materi di malam sebelum ujian."
+            },
+            {
+                id: 8,
+                title: "Interleaved Practice",
+                category: "Strategi",
+                image: "https://i.pinimg.com/736x/84/65/1b/84651b2b4dadff7cff9f503a1c4616c7.jpg",
+                vibe: "Mix Topics",
+                desc: "Mencampur beberapa topik atau mata pelajaran berbeda dalam satu sesi belajar.",
+                prepTime: "45 Menit",
+                steps: [
+                    "Jangan belajar satu mapel seharian penuh (misal: jangan Matematika terus).",
+                    "Bagi waktu jadi 3 bagian: 15 menit Matematika, 15 menit Biologi, 15 menit Ekonomi.",
+                    "Latih otakmu untuk terbiasa berpindah konteks soal dengan cepat."
+                ],
+                scenario: "Bikin otak tidak cepat bosan dan melatih pemecahan masalah kompleks."
+            },
+            {
+                id: 9,
+                title: "Mind Mapping",
+                category: "Catatan",
+                image: "https://i.pinimg.com/736x/2b/8a/b8/2b8ab8d88eedd4cec62768af886ff207.jpg",
+                vibe: "Visual Ideas",
+                desc: "Membuat peta pikiran bercabang menggunakan warna dan kata kunci visual.",
+                prepTime: "30 Menit",
+                steps: [
+                    "Tulis topik utama di tengah-tengah kertas.",
+                    "Buat cabang-cabang utama untuk sub-topik penting.",
+                    "Gunakan warna berbeda, simbol, dan gambar mini di setiap cabang.",
+                    "Gunakan kata kunci singkat alih-alih kalimat panjang."
+                ],
+                scenario: "Sangat membantu tipe pembelajar visual yang gampang mengingat gambar."
+            },
+            {
+                id: 10,
+                title: "SQ3R Method",
+                category: "Membaca",
+                image: "https://media.licdn.com/dms/image/v2/D4D22AQG-Th61DM7EeA/feedshare-shrink_1280/B4DaA_Y3siHsAM-/0/1787769879547?e=2147483647&v=beta&t=sS75uIdGt12Iwu9kSyaApXBJJC8XnQTBme_QhPajuTc",
+                vibe: "Deep Reading",
+                desc: "Metode membaca teks panjang secara sistematis (Survey, Question, Read, Recite, Review).",
+                prepTime: "45 Menit",
+                steps: [
+                    "Survey: Baca judul dan sub-judul buku sekilas.",
+                    "Question: Buat pertanyaan dari judul yang sudah dibaca.",
+                    "Read: Baca teks untuk mencari jawaban pertanyaan tadi.",
+                    "Recite: Ucapkan jawabannya dengan bahasamu sendiri.",
+                    "Review: Baca ulang rangkumannya secara keseluruhan."
+                ],
+                scenario: "Cocok banget buat melahap bab buku teks pelajaran yang tebal dan padat."
+            }
+        ];
+
+        // Render Kartu (1-10)
+        function renderMethods() {
+            const grid = document.getElementById('studyGrid');
+            grid.innerHTML = studyMethods.map(item => `
+                <div onclick="openModal(${item.id})" class="glass-card rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 group flex flex-col justify-between">
+                    <div>
+                        <!-- Gambar Ilustrasi -->
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <span class="absolute top-3 right-3 bg-[#87A987] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">${item.category}</span>
+                            <span class="absolute bottom-3 left-3 bg-[#6B8E6B]/90 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm">${item.vibe}</span>
+                        </div>
+                        <!-- Info Singkat -->
+                        <div class="p-5">
+                            <div class="flex items-center gap-2 text-xs font-bold text-[#4A6B4A] mb-1">
+                                <span>⏱️ ${item.prepTime}</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-emerald-950 mb-2 group-hover:text-pink-600 transition-colors">${item.title}</h3>
+                            <p class="text-slate-700 text-sm leading-relaxed line-clamp-2">${item.desc}</p>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5 pt-2 flex items-center justify-between text-xs font-bold text-purple-900 border-t border-emerald-100">
+                        <span>✨ Lihat Detail Teknik</span>
+                        <span class="bg-[#DCE7DC] text-[#2F4F2F] px-3 py-1 rounded-xl">Buka ➔</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Buka Pop-up Detail
+        function openModal(id) {
+            const item = studyMethods.find(d => d.id === id);
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="relative h-56 rounded-2xl overflow-hidden mb-4 shadow-md">
+                    <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-3 left-3 bg-[#6B8E6B] text-white text-xs font-bold px-3 py-1 rounded-full">✨ ${item.vibe}</span>
+                </div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#DCE7DC] text-[#2F4F2F]">${item.category}</span>
+                    <span class="text-xs font-bold text-[#4A6B4A]">⏱️ ${item.prepTime}</span>
+                </div>
+                <h2 class="text-2xl font-black text-emerald-950 mb-2">${item.title}</h2>
+                <p class="text-slate-700 text-sm mb-4 font-medium bg-[#F0F5F0] p-3 rounded-xl border border-[#C5D7C5]">💡 ${item.desc}</p>
+                
+                <h4 class="font-extrabold text-sm text-[#4A6B4A] mb-2 uppercase tracking-wide">📌 Langkah-Langkah:</h4>
+                <ol class="space-y-2 mb-4">
+                    ${item.steps.map((step, idx) => `<li class="text-sm text-slate-700 flex items-start gap-2 bg-[#F7FAF7] p-2.5 rounded-xl border border-[#E2EAE2]"><span class="font-bold text-[#6B8E6B]">${idx+1}.</span> ${step}</li>`).join('')}
+                </ol>
+
+                <div class="bg-[#E4EDE4] border border-[#B8D0B8] p-3.5 rounded-2xl">
+                    <span class="text-xs font-bold text-[#2F4F2F] block mb-1">🎯 Kapan Waktu Pakai Terbaik?</span>
+                    <p class="text-xs text-[#3A5A3A] leading-relaxed">${item.scenario}</p>
+                </div>
+            `;
+            const modal = document.getElementById('studyModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Tutup Pop-up
+        function closeModal() {
+            const modal = document.getElementById('studyModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // Jalankan render awal
+        renderMethods();
+    </script>
+</body>
+</html>
